@@ -25,4 +25,4 @@ class RelaisController:
         GPIO.output(self.RELAIS_B_GPIO, GPIO.HIGH)
 
     def cleanUp(self):
-        GPIO.clenup()
+        GPIO.cleanup()

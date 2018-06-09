@@ -18,7 +18,7 @@ class SolarPumpController:
     def switchToMode(self, poolPumpMode):
         self._log.info("Switching to " + str(poolPumpMode))
         if poolPumpMode == PoolpumpMode.Normal:
-            if not self._feedbackController.isSwitching():
+            if not self._feedbackController.isSwitching() and not self._feedbackController.isInPosition_B():
                 self._powerOn()
                 time.sleep(1)
                 self._setPumpModeNormal()
@@ -27,7 +27,7 @@ class SolarPumpController:
             else:
                 raise PoolTransitionError(PoolpumpMode.Switching, poolPumpMode, "Pump is still switching!")
         elif poolPumpMode == PoolpumpMode.Solar:
-            if not self._feedbackController.isSwitching():
+            if not self._feedbackController.isSwitching() and not self._feedbackController.isInPosition_A():
                 self._powerOn()
                 time.sleep(1)
                 self._setPumpModeSolar()
@@ -41,25 +41,25 @@ class SolarPumpController:
     def getPoolpumpMode(self):
         mode = None
         if self._feedbackController.isInPosition_A():
-            mode = PoolpumpMode.Normal
-        elif self._feedbackController.isInPosition_B():
             mode = PoolpumpMode.Solar
+        elif self._feedbackController.isInPosition_B():
+            mode = PoolpumpMode.Normal
         elif self._feedbackController.isSwitching():
             mode = PoolpumpMode.Switching
         self._log.info("Retrieving Poolpumpmode -> " + str(mode))
         return mode
 
     def _powerOn(self):
-        self._relaisController.openRelais_A()  # Strom ein
+        self._relaisController.openRelais_B()  # Strom ein
 
     def _powerOff(self):
-        self._relaisController.closeRelais_A()  # Strom aus
+        self._relaisController.closeRelais_B()  # Strom aus
 
     def _setPumpModeNormal(self):
-        self._relaisController.openRelais_B()  # Ventil auf
+        self._relaisController.openRelais_A()  # Ventil auf
 
     def _setPumpModeSolar(self):
-        self._relaisController.closeRelais_B()  # Ventil zu
+        self._relaisController.closeRelais_A()  # Ventil zu
 
     def dispose(self):
         self._log.info("Disposing SolarController...")

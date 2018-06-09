@@ -4,6 +4,9 @@ import logging
 class Logger:
     logger = None
 
+    def __init__(self):
+	self.setUpLocalLogger()
+
     def setUpLocalLogger(self):
         self.logger = logging.getLogger('SolarPumpControlApplication')
         hdlr = logging.FileHandler('SolarPumpControlApplication.log')
